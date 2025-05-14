@@ -17,7 +17,31 @@ def get_src_dir():
     else:
         return os.getcwd()
 
-def build_drug_name_to_id_map(xml_path: str, save_output: bool = True):
+def iterative_saver(data: dict, filename: str, save_directory: str = "saved_outputs"):
+    """
+    Save the data to a pickle file. If the file exists, add a suffix to the filename.
+    """
+
+    src_dir = get_src_dir()
+    saved_outputs_dir = os.path.join(src_dir, 'saved_outputs')
+    os.makedirs(saved_outputs_dir, exist_ok=True)
+    
+    # Check if the file exists. If it does, add a suffix to the filename
+    if os.path.exists(os.path.join(saved_outputs_dir, f'{filename}.pkl')):
+        suffix = 1
+        while os.path.exists(os.path.join(saved_outputs_dir, f'{filename}_{suffix}.pkl')):
+            suffix += 1
+        output_path = os.path.join(saved_outputs_dir, f'{filename}_{suffix}.pkl')
+        with open(output_path, 'wb') as f:
+            pickle.dump(data, f)
+        logger.info(f"Saved {data} to {output_path}")
+    else:
+        output_path = os.path.join(saved_outputs_dir, f'{filename}.pkl')
+        with open(output_path, 'wb') as f:
+            pickle.dump(data, f)
+        logger.info(f"Saved {filename} to {output_path}")
+        
+def build_drugbank_name_to_id_map(xml_path: str, save_output: bool = True):
     """
     Build a map from drug name to drugbank id. Iterate through the XML file and extract the drugbank id and name for each drug.
     Args:
@@ -46,26 +70,25 @@ def build_drug_name_to_id_map(xml_path: str, save_output: bool = True):
 
     # Save the map to a pickle file
     if save_output:
-        src_dir = get_src_dir()
-        saved_outputs_dir = os.path.join(src_dir, 'saved_outputs')
-        os.makedirs(saved_outputs_dir, exist_ok=True)
-        
-        # Check if the file exists. If it does, add a suffix to the filename
-        if os.path.exists(os.path.join(saved_outputs_dir, 'drug_name_to_id.pkl')):
-            suffix = 1
-            while os.path.exists(os.path.join(saved_outputs_dir, f'drug_name_to_id_{suffix}.pkl')):
-                suffix += 1
-            output_path = os.path.join(saved_outputs_dir, f'drug_name_to_id_{suffix}.pkl')
-            with open(output_path, 'wb') as f:
-                pickle.dump(name_to_id, f)
-            logger.info(f"Saved drug name to id map to {output_path}")
-        else:
-            output_path = os.path.join(saved_outputs_dir, 'drug_name_to_id.pkl')
-            with open(output_path, 'wb') as f:
-                pickle.dump(name_to_id, f)
-            logger.info(f"Saved drug name to id map to {output_path}")
-    else:
-        logger.info(f"Not saving drug name to id map")
+        iterative_saver(name_to_id, 'drugbank_name_to_id')
+
+    return name_to_id
+
+
+
+def reverse_drugbank_name_to_id_map(name_to_id: dict, save_output: bool = True):
+    """
+    Reverse the drug name to id map.
+    Args:
+        name_to_id (dict): A dictionary mapping drug names to drugbank ids
+    Returns:
+        dict: A dictionary mapping drugbank ids to drug names
+    """
+    name_to_id = {v: k for k, v in name_to_id.items()}
+
+    # Save the map to a pickle file
+    if save_output:
+        iterative_saver(name_to_id, 'drugbank_id_to_name')
     return name_to_id
 
 if __name__ == '__main__':
@@ -73,4 +96,5 @@ if __name__ == '__main__':
     src_dir = get_src_dir()
     # Default xml_path to drugbank.xml
     xml_path = os.path.join(src_dir, 'data', 'full_database.xml')
-    name_to_id = build_drug_name_to_id_map(xml_path, save_output=True)
+    name_to_id = build_drugbank_name_to_id_map(xml_path, save_output=True)
+    id_to_name = reverse_drugbank_name_to_id_map(name_to_id, save_output=True)
