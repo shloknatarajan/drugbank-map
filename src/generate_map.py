@@ -3,7 +3,7 @@ import pickle
 import sys
 from loguru import logger
 
-def build_drug_name_to_id_map(xml_path):
+def build_drug_name_to_id_map(xml_path: str, save_output: bool = True):
     logger.info(f"Building drug name to id map from {xml_path}")
     ns = {'db': 'http://www.drugbank.ca'}
     name_to_id = {}
@@ -18,11 +18,15 @@ def build_drug_name_to_id_map(xml_path):
                     name_to_id[name.text.lower()] = drugbank_id.text
             elem.clear()
     logger.info(f"Built drug name to id map with {len(name_to_id)} entries")
+    # Save the map to a pickle file
+    if save_output:
+        with open('drug_name_to_id.pkl', 'wb') as f:
+            pickle.dump(name_to_id, f)
+        logger.info(f"Saved drug name to id map to drug_name_to_id.pkl")
+    else:
+        logger.info(f"Not saving drug name to id map")
     return name_to_id
 
 if __name__ == '__main__':
     xml_path = sys.argv[1]
-    name_to_id = build_drug_name_to_id_map(xml_path)
-    with open('drug_name_to_id.pkl', 'wb') as f:
-        pickle.dump(name_to_id, f)
-    logger.info(f"Saved drug name to id map to drug_name_to_id.pkl")
+    name_to_id = build_drug_name_to_id_map(xml_path, save_output=True)
