@@ -1,0 +1,14 @@
+[project]
+authors = ["Shlok Natarajan <shlok.natarajan@gmail.com>"]
+channels = ["conda-forge"]
+name = "drugbank-map"
+platforms = ["osx-arm64"]
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]
+ipykernel = ">=6.29.5,<7"
+pandas = ">=2.2.3,<3"
+lxml = ">=5.4.0,<6"
+loguru = ">=0.7.3,<0.8"
