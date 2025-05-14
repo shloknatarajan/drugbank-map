@@ -1,0 +1,29 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Fuzzy Search",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/fuzzy_search.py",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Generate Map",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/generate_map.py",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "WHO Parser",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/who_parser.py",
+            "console": "integratedTerminal"
+        }
+    ]
+}
